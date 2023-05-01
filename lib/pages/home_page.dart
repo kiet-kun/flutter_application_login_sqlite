@@ -3,6 +3,8 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_login/pages/login_page.dart';
 
+import '../sql_helper.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -11,6 +13,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isLoading = false;
+  List<Map<String, dynamic>> _journals = [];
+
+  @override
+  void initState() {
+    super.initState();
+    get_users(); // Loading the diary when the app starts
+  }
+
+  void get_users() async {
+    setState(() {
+      isLoading = true;
+    });
+    var data = await SqlDb().readData('SELECT * FROM Test');
+    setState(() {
+      _journals = data;
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,6 +41,11 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
+            (isLoading)
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Text(this._journals.toString()),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
