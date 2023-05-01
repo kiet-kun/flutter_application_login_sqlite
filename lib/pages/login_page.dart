@@ -16,12 +16,14 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  late GlobalKey<FormState> _formKey;
   SqlDb sqlDb = SqlDb();
 
   @override
   void initState() {
     super.initState();
     init();
+    _formKey = GlobalKey<FormState>();
   }
 
   void init() async {
@@ -70,44 +72,61 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Tài khoản'),
-              SizedBox(height: 12),
-              TextFormField(
-                controller: _userNameController,
-              ),
-              SizedBox(height: 12),
-              Text('Mật khẩu'),
-              SizedBox(height: 12),
-              TextFormField(
-                controller: _passwordController,
-              ),
-              SizedBox(height: 12),
-              isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Center(
-                      child: ElevatedButton(
-                          onPressed: () {
-                            _login();
-                          },
-                          child: Text('Đăng nhập'))),
-              SizedBox(height: 12),
-              Center(
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignUpPage()),
-                      );
-                    },
-                    child: Text('Đăng kí')),
-              )
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Tài khoản'),
+                SizedBox(height: 12),
+                TextFormField(
+                  controller: _userNameController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Vui lòng nhập tài khoản";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 12),
+                Text('Mật khẩu'),
+                SizedBox(height: 12),
+                TextFormField(
+                  controller: _passwordController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Vui lòng nhập mật khẩu";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 12),
+                isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Center(
+                        child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _login();
+                              }
+                            },
+                            child: Text('Đăng nhập'))),
+                SizedBox(height: 12),
+                Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpPage()),
+                        );
+                      },
+                      child: Text('Đăng kí')),
+                )
+              ],
+            ),
           ),
         ),
       ),

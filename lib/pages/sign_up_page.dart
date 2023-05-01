@@ -19,10 +19,25 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _confirm_passwordController =
       TextEditingController();
   SqlDb sqlDb = SqlDb();
+  late GlobalKey<FormState> _formKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _formKey = GlobalKey<FormState>();
+  }
 
   @override
   Widget build(BuildContext context) {
     void _sign_up() async {
+      if (_passwordController.text != _confirm_passwordController.text) {
+        const snackBar = SnackBar(
+          content: Text('Nhập lại mật khẩu sai'),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
       setState(() {
         isLoading = true;
       });
@@ -50,32 +65,57 @@ class _SignUpPageState extends State<SignUpPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text('Trang đăng kí')),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Text('Tài khoản'),
-            TextFormField(
-              controller: _userNameController,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Text('Tài khoản'),
+                TextFormField(
+                  controller: _userNameController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Vui lòng nhập tài khoản";
+                    }
+                    return null;
+                  },
+                ),
+                Text('Mật khẩu'),
+                TextFormField(
+                  controller: _passwordController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Vui lòng nhập mật khẩu";
+                    }
+                    return null;
+                  },
+                ),
+                Text('Xác nhận mật khẩu'),
+                TextFormField(
+                  controller: _confirm_passwordController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Vui lòng nhập lại mật khẩu";
+                    }
+                    return null;
+                  },
+                ),
+                isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _sign_up();
+                          }
+                        },
+                        child: Text('Đăng kí'))
+              ],
             ),
-            Text('Mật khẩu'),
-            TextFormField(
-              controller: _passwordController,
-            ),
-            Text('Xác nhận mật khẩu'),
-            TextFormField(
-              controller: _confirm_passwordController,
-            ),
-            isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : ElevatedButton(
-                    onPressed: () {
-                      _sign_up();
-                    },
-                    child: Text('Đăng kí'))
-          ],
+          ),
         ),
       ),
     );
