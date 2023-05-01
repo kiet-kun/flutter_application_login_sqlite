@@ -43,15 +43,26 @@ class _LoginPageState extends State<LoginPage> {
       });
       // await SqlHelper.addUser(
       //     _userNameController.text, _passwordController.text);
-      int response = await sqlDb.insertData(
-          'INSERT INTO Test(name, value, num) VALUES("some name", 1234, 456.789)');
+      // int response = await sqlDb.insertData(
+      //     'INSERT INTO Test(name, value, num) VALUES("some name", 1234, 456.789)');
+      if (await SqlDb()
+              .login(_userNameController.text, _passwordController.text) ==
+          true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        const snackBar = SnackBar(
+          content: Text('Đăng nhập thất bại'),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+
       setState(() {
         isLoading = false;
       });
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
     }
 
     return Scaffold(

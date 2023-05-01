@@ -32,7 +32,37 @@ class SqlDb {
     await db.execute(
         'CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
 
+    await db.execute(
+        'CREATE TABLE User (id INTEGER PRIMARY KEY, user_name TEXT, password TEXT)');
+
     print('create database and table');
+  }
+
+  userExists(String user_name) async {
+    Database? mydb = await db;
+    List<Map> response = await mydb!.rawQuery('SELECT * FROM User');
+
+    bool check = false;
+    response.forEach((element) {
+      if (element['user_name'] == user_name) {
+        check = true;
+      }
+    });
+    return check;
+  }
+
+  login(String user_name, String password) async {
+    Database? mydb = await db;
+    List<Map> response = await mydb!.rawQuery('SELECT * FROM User');
+
+    bool check = false;
+    response.forEach((element) {
+      if (element['user_name'] == user_name &&
+          element['password'] == password) {
+        check = true;
+      }
+    });
+    return check;
   }
 
   readData(String sql) async {

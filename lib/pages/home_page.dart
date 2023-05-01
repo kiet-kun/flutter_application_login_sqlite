@@ -26,7 +26,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       isLoading = true;
     });
-    var data = await SqlDb().readData('SELECT * FROM Test');
+    // var data = await SqlDb().readData('SELECT * FROM Test');
+    var data = await SqlDb().readData('SELECT * FROM User');
     setState(() {
       _journals = data;
       isLoading = false;
@@ -41,11 +42,6 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            (isLoading)
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Text(this._journals.toString()),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -53,7 +49,12 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (context) => const LoginPage()),
                   );
                 },
-                child: Text('Đăng xuất'))
+                child: Text('Đăng xuất')),
+            (isLoading)
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Text(this._journals.toString()),
           ],
         ),
       ),
